@@ -23,40 +23,40 @@ public class AuthController {
     private JwtUtil jwtUtil;
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
-        if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
-            return ResponseEntity.badRequest().body("Ese email ya está registrado");
-        }
-
-        Usuario usuario = new Usuario();
-        usuario.setNombre(request.getNombre());
-        usuario.setEmail(request.getEmail());
-        usuario.setPassword(passwordEncoder.encode(request.getPassword()));
-        usuario.setRol("USER"); // por defecto, todo el mundo entra como USER
-
-        usuarioRepository.save(usuario);
-
-        return ResponseEntity.status(201).body("Usuario creado correctamente");
+public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
+    if (usuarioRepository.findByEmail(request.getEmail()).isPresent()) {
+        return ResponseEntity.badRequest().body(java.util.Map.of("error", "Ese email ya está registrado"));
     }
+
+    Usuario usuario = new Usuario();
+    usuario.setNombre(request.getNombre());
+    usuario.setEmail(request.getEmail());
+    usuario.setPassword(passwordEncoder.encode(request.getPassword()));
+    usuario.setRol("USER");
+
+    usuarioRepository.save(usuario);
+
+    return ResponseEntity.status(201).body(java.util.Map.of("message", "Usuario creado correctamente"));
+}
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
-        var usuarioOpt = usuarioRepository.findByEmail(request.getEmail());
+public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    var usuarioOpt = usuarioRepository.findByEmail(request.getEmail());
 
-        if (usuarioOpt.isEmpty()) {
-            return ResponseEntity.badRequest().body("Credenciales incorrectas");
-        }
-
-        Usuario usuario = usuarioOpt.get();
-
-        if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
-            return ResponseEntity.badRequest().body("Credenciales incorrectas");
-        }
-
-        String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
-
-        return ResponseEntity.ok(
-            new AuthResponse(token, usuario.getNombre(), usuario.getEmail(), usuario.getRol())
-        );
+    if (usuarioOpt.isEmpty()) {
+        return ResponseEntity.badRequest().body(java.util.Map.of("error", "Credenciales incorrectas"));
     }
+
+    Usuario usuario = usuarioOpt.get();
+
+    if (!passwordEncoder.matches(request.getPassword(), usuario.getPassword())) {
+        return ResponseEntity.badRequest().body(java.util.Map.of("error", "Credenciales incorrectas"));
+    }
+
+    String token = jwtUtil.generateToken(usuario.getEmail(), usuario.getRol());
+
+    return ResponseEntity.ok(
+        new AuthResponse(token, usuario.getNombre(), usuario.getEmail(), usuario.getRol())
+    );
+}
 }
