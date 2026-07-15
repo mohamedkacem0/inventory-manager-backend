@@ -48,7 +48,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowedOrigins(List.of(
             "http://localhost:4200",
-            "https://inventory-manager-frontend.vercel.app" 
+            "https://inventory-manager-frontend-three.vercel.app" 
         ));        
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
